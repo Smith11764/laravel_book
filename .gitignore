@@ -1,5 +1,2 @@
 .idea
 .env
-docker_data/
-docker-compose.yml
-infra/
