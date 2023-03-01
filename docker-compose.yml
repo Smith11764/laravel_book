@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./infra/docker/php/Dockerfile
+    ports:
+      - ${WEB_PORT}:80
+    volumes:
+      - ./src:/work/src
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - ${DB_PORT}:3306
+      - DB_DATABASE=${DB_NAME}
+      - DB_USERNAME=${DB_USER}
+      - DB_PASSWORD=${DB_PASS}
+      - PHP_IDE_CONFIG=serverName=${SV_NAME}
+    depends_on:
+      - db
+      - mailhog
+
+  db:
+    build:
+      context: .
+      dockerfile: ./infra/docker/mysql/Dockerfile
+    ports:
+      - ${DB_PORT}:3306
+    volumes:
+      - ./docker_data/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
